@@ -1,0 +1,297 @@
+<main class="page-shell">
+  <section class="app-frame">
+    <app-step-progress
+      [steps]="flow.steps"
+      [currentStepIndex]="flow.currentStepIndex()"
+      [progressValue]="flow.progressValue()"
+    />
+
+    <section class="hero-card">
+      <div class="hero-copy">
+        <p class="eyebrow">MVP frontend</p>
+        <h1>{{ flow.currentStep().title }}</h1>
+        <p class="subtitle">{{ flow.currentStep().subtitle }}</p>
+      </div>
+
+      @switch (flow.currentStep().key) {
+        @case ('welcome') {
+          <div class="content-grid">
+            <section class="panel">
+              <h2>Medición guiada con cámara</h2>
+              <p>
+                Esta app captura el pie izquierdo y derecho usando la cámara del celular y una tarjeta
+                estándar ID-1 como referencia visual. El análisis final quedará listo para conectarse
+                después a un backend.
+              </p>
+
+              <div class="pill-row">
+                <span>Solo frontend</span>
+                <span>Optimizada para móvil</span>
+                <span>Lista para backend</span>
+              </div>
+
+              <div class="action-row">
+                <button type="button" class="primary-button" (click)="goToInstructions()">
+                  Ver instrucciones
+                </button>
+                <button type="button" class="secondary-button" (click)="startMeasurement()">
+                  Ir directo a capturar
+                </button>
+              </div>
+            </section>
+
+            <app-instruction-list
+              [items]="preparationInstructions"
+              title="Antes de empezar"
+            />
+          </div>
+        }
+
+        @case ('instructions') {
+          <div class="content-grid">
+            <app-instruction-list
+              [items]="captureInstructions"
+              title="Cómo tomar una foto útil"
+            />
+
+            <section class="panel panel--accent">
+              <h2>Qué valida el frontend</h2>
+              <p>
+                La app te guía, muestra vista previa, controla permisos de cámara y evita avanzar sin
+                foto. El análisis automático y la talla final vendrán luego desde el backend.
+              </p>
+
+              <div class="info-stack">
+                <article>
+                  <strong>Referencia:</strong>
+                  <span>Tarjeta ID-1, 85.60 mm x 53.98 mm.</span>
+                </article>
+                <article>
+                  <strong>Modo de captura:</strong>
+                  <span>Preferencia por cámara trasera con `facingMode: 'environment'`.</span>
+                </article>
+                <article>
+                  <strong>Persistencia:</strong>
+                  <span>Las capturas se guardan temporalmente en el navegador para reanudar el flujo.</span>
+                </article>
+              </div>
+
+              <div class="action-row">
+                <button type="button" class="secondary-button" (click)="flow.goBack()">
+                  Volver
+                </button>
+                <button type="button" class="primary-button" (click)="startMeasurement()">
+                  Empezar con pie izquierdo
+                </button>
+              </div>
+            </section>
+          </div>
+        }
+
+        @case ('capture-left') {
+          <div class="content-grid content-grid--camera">
+            <section class="panel">
+              <h2>Captura del pie izquierdo</h2>
+              <p>
+                Mantén el pie completo dentro del marco y la tarjeta al costado. No avances hasta ver
+                una foto clara.
+              </p>
+
+              <app-instruction-list
+                [items]="captureInstructions"
+                title="Checklist rápida"
+              />
+            </section>
+
+            <app-camera-capture footSide="left" (captureCreated)="onCaptureCreated($event)" />
+          </div>
+        }
+
+        @case ('confirm-left') {
+          <div class="content-grid">
+            <section class="panel">
+              <h2>Confirmar pie izquierdo</h2>
+              <p>
+                Revisa la captura. Si el pie o la tarjeta no están completos, repítela antes de
+                continuar.
+              </p>
+
+              <div class="capture-meta">
+                <span>Estado: {{ flow.leftCapture() ? 'capturado' : 'pendiente' }}</span>
+                <span>Referencia: tarjeta ID-1</span>
+              </div>
+
+              <div class="action-row">
+                <button type="button" class="secondary-button" (click)="onRetake('left')">
+                  Repetir captura
+                </button>
+                <button
+                  type="button"
+                  class="primary-button"
+                  [disabled]="!flow.leftCapture()"
+                  (click)="onContinueFromConfirmation('left')"
+                >
+                  Continuar con pie derecho
+                </button>
+              </div>
+            </section>
+
+            <section class="preview-card">
+              @if (flow.leftCapture(); as capture) {
+                <img [src]="capture.previewUrl" alt="Vista previa del pie izquierdo" />
+                <div class="preview-copy">
+                  <strong>Resolución:</strong>
+                  <span>{{ capture.width }} x {{ capture.height }}</span>
+                </div>
+              }
+            </section>
+          </div>
+        }
+
+        @case ('capture-right') {
+          <div class="content-grid content-grid--camera">
+            <section class="panel">
+              <h2>Captura del pie derecho</h2>
+              <p>
+                Repite la toma desde arriba, con la misma referencia visual y buena iluminación.
+              </p>
+
+              <app-instruction-list
+                [items]="captureInstructions"
+                title="Checklist rápida"
+              />
+            </section>
+
+            <app-camera-capture footSide="right" (captureCreated)="onCaptureCreated($event)" />
+          </div>
+        }
+
+        @case ('confirm-right') {
+          <div class="content-grid">
+            <section class="panel">
+              <h2>Confirmar pie derecho</h2>
+              <p>
+                Si todo se ve claro, pasamos al resumen final con ambas imágenes listas para enviar.
+              </p>
+
+              <div class="capture-meta">
+                <span>Estado: {{ flow.rightCapture() ? 'capturado' : 'pendiente' }}</span>
+                <span>Referencia: tarjeta ID-1</span>
+              </div>
+
+              <div class="action-row">
+                <button type="button" class="secondary-button" (click)="onRetake('right')">
+                  Repetir captura
+                </button>
+                <button
+                  type="button"
+                  class="primary-button"
+                  [disabled]="!flow.rightCapture()"
+                  (click)="onContinueFromConfirmation('right')"
+                >
+                  Ir al resumen
+                </button>
+              </div>
+            </section>
+
+            <section class="preview-card">
+              @if (flow.rightCapture(); as capture) {
+                <img [src]="capture.previewUrl" alt="Vista previa del pie derecho" />
+                <div class="preview-copy">
+                  <strong>Resolución:</strong>
+                  <span>{{ capture.width }} x {{ capture.height }}</span>
+                </div>
+              }
+            </section>
+          </div>
+        }
+
+        @case ('summary') {
+          <div class="content-grid">
+            <section class="panel">
+              <h2>Resumen final</h2>
+              <p>
+                Ambas capturas quedan listas para enviar al backend futuro. Desde aquí puedes reenviar,
+                repetir una toma o reiniciar el flujo.
+              </p>
+
+              <div class="summary-status">
+                @for (item of summaryChecklist; track item) {
+                  <div class="summary-chip" [class.summary-chip--done]="flow.hasBothCaptures()">
+                    {{ item }}
+                  </div>
+                }
+              </div>
+
+              <div
+                class="submission-box"
+                [class.submission-box--error]="submissionState() === 'error'"
+                [class.submission-box--success]="submissionState() === 'submitted'"
+              >
+                <p>{{ submissionMessage() }}</p>
+              </div>
+
+              <div class="action-row action-row--wrap">
+                <button type="button" class="secondary-button" (click)="goToCapture('left')">
+                  Repetir izquierdo
+                </button>
+                <button type="button" class="secondary-button" (click)="goToCapture('right')">
+                  Repetir derecho
+                </button>
+                <button
+                  type="button"
+                  class="primary-button"
+                  [disabled]="!flow.hasBothCaptures() || submissionState() === 'submitting'"
+                  (click)="submitCaptures()"
+                >
+                  @if (submissionState() === 'submitting') {
+                    Enviando...
+                  } @else {
+                    Enviar al backend
+                  }
+                </button>
+                <button type="button" class="ghost-button" (click)="restartFlow()">
+                  Reiniciar flujo
+                </button>
+              </div>
+            </section>
+
+            <section class="summary-preview-grid">
+              <article class="preview-card">
+                <header>
+                  <h3>Pie izquierdo</h3>
+                  <button type="button" class="link-button" (click)="goToCapture('left')">
+                    Repetir
+                  </button>
+                </header>
+
+                @if (getCaptureFor('left'); as leftCapture) {
+                  <img [src]="leftCapture.previewUrl" alt="Miniatura del pie izquierdo" />
+                  <p class="preview-status">Captura lista</p>
+                } @else {
+                  <p class="preview-empty">Pendiente de captura</p>
+                }
+              </article>
+
+              <article class="preview-card">
+                <header>
+                  <h3>Pie derecho</h3>
+                  <button type="button" class="link-button" (click)="goToCapture('right')">
+                    Repetir
+                  </button>
+                </header>
+
+                @if (getCaptureFor('right'); as rightCapture) {
+                  <img [src]="rightCapture.previewUrl" alt="Miniatura del pie derecho" />
+                  <p class="preview-status">Captura lista</p>
+                } @else {
+                  <p class="preview-empty">Pendiente de captura</p>
+                }
+              </article>
+            </section>
+          </div>
+        }
+      }
+    </section>
+  </section>
+</main>

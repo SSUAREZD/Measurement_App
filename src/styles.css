@@ -1,1 +1,74 @@
-/* You can add global styles to this file, and also import other style files */
+html {
+  color-scheme: dark;
+  font-family: "Inter", "Segoe UI", sans-serif;
+  background: #07111f;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  color: var(--text-primary);
+  background:
+    radial-gradient(circle at top left, rgba(124, 58, 237, 0.16), transparent 24%),
+    radial-gradient(circle at top right, rgba(37, 99, 235, 0.16), transparent 28%),
+    linear-gradient(180deg, #07111f 0%, #091423 100%);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+:root {
+  --bg-base: #07111f;
+  --bg-secondary: #0d1728;
+  --surface: rgba(13, 23, 40, 0.74);
+  --surface-strong: rgba(15, 23, 42, 0.82);
+  --surface-elevated: rgba(19, 29, 50, 0.9);
+  --primary: #7c3aed;
+  --secondary: #2563eb;
+  --accent: #7c3aed;
+  --accent-soft: #2563eb;
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --border-soft: rgba(148, 163, 184, 0.14);
+  --shadow-soft: 0 24px 64px rgba(2, 6, 23, 0.42);
+  --shadow-strong: 0 28px 80px rgba(2, 6, 23, 0.54);
+  --success: #22c55e;
+  --error: #f87171;
+  --warning: #fbbf24;
+  --radius-lg: 24px;
+  --radius-md: 20px;
+  --radius-sm: 18px;
+
+  --bg-base-light: #eef4ff;
+  --bg-secondary-light: #e2e8f0;
+  --surface-light: rgba(255, 255, 255, 0.72);
+  --surface-strong-light: rgba(255, 255, 255, 0.9);
+  --surface-elevated-light: rgba(247, 250, 255, 0.96);
+  --text-primary-light: #0f172a;
+  --text-secondary-light: #334155;
+  --text-muted-light: #64748b;
+  --border-soft-light: rgba(100, 116, 139, 0.16);
+  --shadow-soft-light: 0 24px 64px rgba(15, 23, 42, 0.1);
+  --shadow-strong-light: 0 28px 80px rgba(15, 23, 42, 0.14);
+}
+
+::selection {
+  background: rgba(124, 58, 237, 0.34);
+  color: #ffffff;
+}
