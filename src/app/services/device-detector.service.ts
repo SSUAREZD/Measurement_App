@@ -1,13 +1,14 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { BrowserDetectorService } from './browser-detector.service';
 
 export type DeviceType = 'mobile' | 'tablet' | 'desktop';
 
 export interface DeviceInfo {
   type: DeviceType;
-  brand: string;   
-  model: string;   
-  os: string;      
+  brand: string;
+  model: string;
+  os: string;
   isMobile: boolean;
   isTablet: boolean;
   isDesktop: boolean;
@@ -17,8 +18,15 @@ export interface DeviceInfo {
 export class DeviceDetectorService {
   readonly device: DeviceInfo;
 
-  constructor(private browserDetector: BrowserDetectorService) {
-    this.device = this.detect();
+  constructor(
+    private browserDetector: BrowserDetectorService,
+    @Inject(PLATFORM_ID) platformId: object,
+  ) {
+    this.device = isPlatformBrowser(platformId) ? this.detect() : this.unknown();
+  }
+
+  private unknown(): DeviceInfo {
+    return { type: 'desktop', brand: 'Unknown', model: 'Unknown', os: 'Unknown', isMobile: false, isTablet: false, isDesktop: true };
   }
 
   private detect(): DeviceInfo {
@@ -111,6 +119,8 @@ export class DeviceDetectorService {
     return { brand: 'Unknown', model: 'Unknown' };
   }
 
+  
+
   /** Rough iPhone generation mapping from screen resolution + JS hints. */
   private iphoneModel(): string {
     const w = screen.width;
@@ -119,18 +129,32 @@ export class DeviceDetectorService {
     const long = Math.max(w, h);
     const short = Math.min(w, h);
 
-    // Logical point size → model map (covers iPhone 6 through 16 lineup)
+    // Logical point size → model map.
+    // NOTE: models that share identical CSS dimensions cannot be told apart
+    // from the browser — no JS API exposes the physical model name on iOS.
+    // Groups that are indistinguishable are listed together.
     const map: Array<[number, number, number, string]> = [
-      [390, 844, 3, 'iPhone 14 / 13 / 12'],
-      [393, 852, 3, 'iPhone 15 / 16'],
-      [430, 932, 3, 'iPhone 15 Plus / 14 Plus'],
-      [430, 932, 3, 'iPhone 16 Plus'],
-      [428, 926, 3, 'iPhone 12/13 Pro Max'],
+      // ── Unique screen sizes (can be identified precisely) ────────────────
+      [402, 874, 3, 'iPhone 16 Pro'],
+      [440, 956, 3, 'iPhone 16 Pro Max'],
+      // ── Shared 393×852 @ 3× ─────────────────────────────────────────────
+      // iPhone 14 Pro, 15, 15 Pro and 16 all share this size
+      [393, 852, 3, 'iPhone 14 Pro / 15 / 15 Pro / 16'],
+      // ── Shared 430×932 @ 3× ─────────────────────────────────────────────
+      // iPhone 14 Plus, 14 Pro Max, 15 Plus, 15 Pro Max and 16 Plus
+      [430, 932, 3, 'iPhone 14 Plus / 14 Pro Max / 15 Plus / 15 Pro Max / 16 Plus'],
+      // ── Shared 390×844 @ 3× ─────────────────────────────────────────────
+      [390, 844, 3, 'iPhone 12 / 12 Pro / 13 / 13 Pro / 14'],
+      // ── Shared 428×926 @ 3× ─────────────────────────────────────────────
+      [428, 926, 3, 'iPhone 12 Pro Max / 13 Pro Max'],
+      // ── Shared 375×812 @ 3× ─────────────────────────────────────────────
+      // iPhone X, XS, 11 Pro, 12 mini, 13 mini
+      [375, 812, 3, 'iPhone X / XS / 11 Pro / 12 mini / 13 mini'],
+      // ── Older models ─────────────────────────────────────────────────────
       [414, 896, 3, 'iPhone 11 Pro Max / XS Max'],
       [414, 896, 2, 'iPhone 11 / XR'],
       [414, 736, 3, 'iPhone 8 Plus / 7 Plus / 6s Plus'],
-      [375, 812, 3, 'iPhone X / XS / 11 Pro'],
-      [375, 667, 2, 'iPhone SE (2nd/3rd) / 8 / 7 / 6s'],
+      [375, 667, 2, 'iPhone SE (2nd/3rd gen) / 8 / 7 / 6s'],
       [320, 568, 2, 'iPhone SE (1st gen) / 5s'],
       [320, 480, 2, 'iPhone 4s'],
     ];

@@ -19,7 +19,9 @@ export class PhoneService {
   }
 
   getByBrandAndName(brand: string, name: string): Observable<PhoneDTO> {
-    return this.http.get<PhoneDTO>(`${this.base}/brand/${brand}/name/${name}`);
+    return this.http.get<PhoneDTO>(
+      `${this.base}/search?brand=${encodeURIComponent(brand)}&name=${encodeURIComponent(name)}`
+    );
   }
 
   create(phone: PhoneDTO): Observable<PhoneDTO> {

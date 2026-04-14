@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 
 export type BrowserName =
   | 'Chrome'
@@ -23,8 +24,12 @@ export interface BrowserInfo {
 export class BrowserDetectorService {
   readonly browser: BrowserInfo;
 
-  constructor() {
-    this.browser = this.detect();
+  constructor(@Inject(PLATFORM_ID) platformId: object) {
+    this.browser = isPlatformBrowser(platformId) ? this.detect() : this.unknown();
+  }
+
+  private unknown(): BrowserInfo {
+    return { name: 'Unknown', version: '', isChrome: false, isFirefox: false, isSafari: false, isEdge: false, isOpera: false };
   }
 
   private detect(): BrowserInfo {
