@@ -4,9 +4,7 @@ import { RouterOutlet } from '@angular/router';
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  template: '<router-outlet />',
+  styles: [':host { display: block; min-height: 100dvh; }']
 })
-export class AppComponent {
-  title = 'Measurement_App';
-}
+export class AppComponent {}

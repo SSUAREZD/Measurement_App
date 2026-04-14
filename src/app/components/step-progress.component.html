@@ -1,0 +1,22 @@
+<section class="progress-card">
+  <div class="progress-header">
+    <p class="eyebrow">Flujo guiado</p>
+    <p class="step-copy">Paso {{ currentStepIndex + 1 }} de {{ steps.length }}</p>
+  </div>
+
+  <div class="progress-track" aria-hidden="true">
+    <span class="progress-fill" [style.width.%]="progressValue"></span>
+  </div>
+
+  <ol class="step-list">
+    @for (step of steps; track step.key; let index = $index) {
+      <li
+        class="step-chip"
+        [class.step-chip--current]="index === currentStepIndex"
+        [class.step-chip--done]="index < currentStepIndex"
+      >
+        {{ index + 1 }}. {{ step.title }}
+      </li>
+    }
+  </ol>
+</section>
