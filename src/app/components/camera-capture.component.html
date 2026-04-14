@@ -1,0 +1,56 @@
+<section class="camera-card">
+  @if (cameraState().orientation === 'landscape') {
+    <div class="warning-banner">
+      Mantén el celular en vertical para una guia mas estable y una captura mas clara.
+    </div>
+  }
+
+  @if (cameraState().status === 'error') {
+    <div class="error-panel" role="alert">
+      <p class="error-title">No fue posible iniciar la camara</p>
+      <p class="error-copy">{{ cameraState().errorMessage }}</p>
+      <button type="button" class="secondary-button" (click)="startCamera()">
+        Reintentar camara
+      </button>
+    </div>
+  } @else {
+    <div class="camera-stage">
+      <video #videoElement autoplay playsinline muted></video>
+      <canvas #captureCanvas hidden></canvas>
+      <app-camera-overlay [footSide]="footSide" />
+    </div>
+  }
+
+  <p class="camera-hint">{{ previewMessage() }}</p>
+
+  <div class="camera-actions">
+    @if (cameraState().streamActive) {
+      <button type="button" class="secondary-button" (click)="stopCamera()">
+        Detener camara
+      </button>
+    } @else if (cameraState().status !== 'requestingPermission') {
+      <button type="button" class="secondary-button" (click)="startCamera()">
+        Iniciar camara
+      </button>
+    }
+
+    <button
+      type="button"
+      class="primary-button"
+      [disabled]="cameraState().status !== 'cameraReady'"
+      (click)="capturePhoto()"
+    >
+      @if (cameraState().status === 'requestingPermission') {
+        Solicitando permiso...
+      } @else if (cameraState().status === 'capturing') {
+        Capturando...
+      } @else {
+        Tomar foto
+      }
+    </button>
+
+    <button type="button" class="ghost-button" (click)="restartCamera()">
+      Reiniciar camara
+    </button>
+  </div>
+</section>

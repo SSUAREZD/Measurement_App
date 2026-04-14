@@ -1,0 +1,40 @@
+<app-navbar />
+
+<div class="home-container">
+
+  <!-- Loading -->
+  <div *ngIf="state === 'loading'" class="message-card">
+    <p>Cargando...</p>
+  </div>
+
+  <!-- Case 1: Not a phone -->
+  <div *ngIf="state === 'not-phone'" class="message-card">
+    <img src="thoth_confused.png" alt="Thoth confundido" class="thoth-image" />
+    <p>Thoth es un servicio diseñado para celulares, por favor accede desde un celular</p>
+  </div>
+
+  <!-- Case 2: Phone not supported -->
+  <div *ngIf="state === 'unsupported-phone'" class="message-card">
+    <img src="thoth_confused.png" alt="Thoth confundido" class="thoth-image" />
+    <p>Thoth todavia no es compatible con tu celular, intenta más tarde</p>
+  </div>
+
+  <!-- Case 3: Supported phone -->
+  <div *ngIf="state === 'supported-phone'" class="welcome-card">
+    <img src="thoth_standing.png" alt="Thoth" class="thoth-image" />
+    <p class="welcome-text">Bienvenido a Thoth, pulsa el botón y da acceso a tus periféricos para comenzar</p>
+    <button class="start-button" (click)="onStart()">Comenzar</button>
+  </div>
+
+</div>
+
+<!-- Debug panel -->
+<div *ngIf="debug" class="debug-panel">
+  <strong>DEBUG</strong>
+  <div>state: {{ state }}</div>
+  <div>type: {{ debug.device.type }}</div>
+  <div>brand: {{ debug.device.brand }}</div>
+  <div>model: {{ debug.device.model }}</div>
+  <div>os: {{ debug.device.os }}</div>
+  <div *ngIf="debug.apiError">api error: {{ debug.apiError }}</div>
+</div>
