@@ -46,7 +46,40 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  onStart(): void {
+  private async requestPermissions(): Promise<void> {
+    // Camera
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+      stream.getTracks().forEach(t => t.stop());
+    } catch { /* denied or unavailable */ }
+
+    // Accelerometer & Gyroscope (iOS 13+ requires explicit permission)
+    const dme = DeviceMotionEvent as unknown as { requestPermission?: () => Promise<string> };
+    if (typeof dme.requestPermission === 'function') {
+      try { await dme.requestPermission(); } catch { /* denied */ }
+    }
+
+    const doe = DeviceOrientationEvent as unknown as { requestPermission?: () => Promise<string> };
+    if (typeof doe.requestPermission === 'function') {
+      try { await doe.requestPermission(); } catch { /* denied */ }
+    }
+
+    // Ambient Light Sensor (Generic Sensor API – limited browser support)
+    if ('AmbientLightSensor' in window) {
+      try {
+        await (navigator as Navigator & { permissions?: { query: (d: { name: string }) => Promise<{ state: string }> } })
+          .permissions?.query({ name: 'ambient-light-sensor' });
+      } catch { /* not supported */ }
+    }
+  }
+
+  async onStart(): Promise<void> {
+    await this.requestPermissions();
     this.router.navigate(['/measure']);
+  }
+
+  async onPruebaMedicion(): Promise<void> {
+    await this.requestPermissions();
+    this.router.navigate(['/medicion']);
   }
 }

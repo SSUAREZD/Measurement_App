@@ -1,0 +1,30 @@
+<app-navbar />
+
+<div class="medicion-container">
+
+  <!-- Camera preview -->
+  <div class="camera-wrapper">
+    <video #cameraPreview class="camera-feed" autoplay playsinline muted></video>
+    <div *ngIf="cameraError" class="camera-error">
+      <p>No se pudo acceder a la cámara</p>
+    </div>
+
+    <!-- Distance overlay -->
+    <div class="distance-overlay" *ngIf="isTracking || distanceCm > 0">
+      <span class="distance-value">{{ distanceCm | number:'1.1-1' }} cm</span>
+    </div>
+  </div>
+
+  <!-- Controls -->
+  <div class="controls">
+    <button
+      class="track-button"
+      [class.tracking]="isTracking"
+      (click)="toggleTracking()"
+    >
+      {{ isTracking ? 'Detener seguimiento' : 'Iniciar seguimiento' }}
+    </button>
+    <div *ngIf="showDebug && debugMotion" class="debug-motion">{{ debugMotion }}</div>
+  </div>
+
+</div>

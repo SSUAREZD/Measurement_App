@@ -57,6 +57,14 @@
   background-color: #16213e;
 }
 
+.secondary-button {
+  background-color: #4a4e69;
+}
+
+.secondary-button:hover {
+  background-color: #363a55;
+}
+
 .debug-panel {
   position: fixed;
   bottom: 0;
