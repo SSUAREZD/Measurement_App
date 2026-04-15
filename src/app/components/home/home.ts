@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { DeviceDetectorService, DeviceInfo } from '../../services/device-detector.service';
 import { PhoneService } from '../../services/phone.service';
 import { PhoneDTO } from '../../models/models';
@@ -21,6 +22,7 @@ export class HomeComponent implements OnInit {
   constructor(
     private deviceDetector: DeviceDetectorService,
     private phoneService: PhoneService,
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -45,6 +47,6 @@ export class HomeComponent implements OnInit {
   }
 
   onStart(): void {
-    // TODO: request peripheral access and navigate to measurement flow
+    this.router.navigate(['/measure']);
   }
 }
