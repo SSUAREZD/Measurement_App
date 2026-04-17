@@ -9,21 +9,57 @@
       <p>No se pudo acceder a la cámara</p>
     </div>
 
-    <!-- Distance overlay -->
+    <!-- Distance (top of camera) -->
     <div class="distance-overlay" *ngIf="isTracking || distanceCm > 0">
       <span class="distance-value">{{ distanceCm | number:'1.1-1' }} cm</span>
     </div>
-  </div>
 
-  <!-- Controls -->
-  <div class="controls">
-    <button
-      class="track-button"
-      [class.tracking]="isTracking"
+    <!-- Full-screen speed overlay — tap anywhere to stop -->
+    <div
+      *ngIf="isTracking"
+      class="speed-overlay"
+      [class]="'speed-overlay speed-overlay-' + speedStatus"
       (click)="toggleTracking()"
     >
-      {{ isTracking ? 'Detener seguimiento' : 'Iniciar seguimiento' }}
+      <div class="speed-overlay-content">
+        <ng-container [ngSwitch]="speedStatus">
+          <span *ngSwitchCase="'idle'" class="speed-main">Quieto</span>
+          <span *ngSwitchCase="'slow'" class="speed-main">Muy lento</span>
+          <span *ngSwitchCase="'ok'"   class="speed-main">Velocidad correcta</span>
+          <span *ngSwitchCase="'fast'" class="speed-main">Muy rápido</span>
+        </ng-container>
+        <span class="speed-sub">{{ TARGET_SPEED_CM_S }} cm/s · Toca para detener</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom controls -->
+  <div class="controls">
+
+    <!-- Calibration progress -->
+    <div *ngIf="isCalibrating" class="calibration-panel">
+      <p class="calib-label">Mantenga el teléfono quieto…</p>
+      <div class="calib-bar-track">
+        <div class="calib-bar-fill" [style.width.%]="calibProgress"></div>
+      </div>
+      <p class="calib-pct">{{ calibProgress }}%</p>
+    </div>
+
+    <!-- Invalidation notice -->
+    <div *ngIf="invalidated && !isTracking && !isCalibrating" class="invalidated-notice">
+      Medición inválida — movió demasiado rápido. Intente de nuevo.
+    </div>
+
+    <button
+      class="track-button"
+      [class.tracking]="isTracking || isCalibrating"
+      (click)="toggleTracking()"
+    >
+      <ng-container *ngIf="state === 'idle'">Iniciar seguimiento</ng-container>
+      <ng-container *ngIf="state === 'calibrating'">Cancelar calibración</ng-container>
+      <ng-container *ngIf="state === 'tracking'">Detener seguimiento</ng-container>
     </button>
+
     <div *ngIf="showDebug && debugMotion" class="debug-motion">{{ debugMotion }}</div>
   </div>
 
