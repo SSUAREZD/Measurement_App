@@ -55,6 +55,137 @@
   letter-spacing: 0.03em;
 }
 
+/* ── Full-screen idle overlay ────────────────────────────────────────────── */
+
+.idle-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.50);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.idle-overlay-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  text-align: center;
+  pointer-events: none;
+}
+
+.idle-main {
+  color: #fff;
+  font-size: 2.2rem;
+  font-weight: 800;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  letter-spacing: 0.01em;
+}
+
+.idle-sub {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+}
+
+.idle-result {
+  color: #2ecc71;
+  font-size: 3.2rem;
+  font-weight: 800;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+  letter-spacing: 0.01em;
+}
+
+.meas-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.meas-item {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+}
+
+.reset-btn {
+  margin-top: 0.25rem;
+  padding: 0.45rem 1.2rem;
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 20px;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  pointer-events: all;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ── Full-screen calibration overlay ────────────────────────────────────── */
+
+.calib-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(41, 128, 185, 0.88);
+}
+
+.calib-overlay-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+  text-align: center;
+  padding: 1.5rem;
+  pointer-events: none;
+  width: 80%;
+}
+
+.calib-main {
+  color: #fff;
+  font-size: 2.2rem;
+  font-weight: 800;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  letter-spacing: 0.01em;
+}
+
+.calib-sub {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.calib-bar-overlay {
+  width: 100%;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.calib-bar-fill-white {
+  height: 100%;
+  background: #fff;
+  border-radius: 5px;
+  transition: width 0.1s linear;
+}
+
+.calib-pct-overlay {
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
 /* ── Full-screen speed overlay ───────────────────────────────────────────── */
 
 .speed-overlay {
@@ -153,6 +284,16 @@
   font-weight: 600;
   text-align: center;
   border-radius: 8px;
+}
+
+.invalidated-bar {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background-color: #c0392b;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: center;
 }
 
 .track-button {

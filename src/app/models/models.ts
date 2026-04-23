@@ -46,15 +46,15 @@ export interface ClientDTO {
 
 // ─── Measurement ──────────────────────────────────────────────────────────────
 
-export interface MeasurementDTO {
-  id?: number;
+export interface FeetMeasurement {
   userId?: string;
-  [key: string]: unknown;
-}
-
-export interface FeetMeasurementDTO {
-  userId?: string;
-  [key: string]: unknown;
+  footLength:   number;
+  ballWidth:    number;
+  heelWidth:    number;
+  /** Calculated server-side — always sent as 0 */
+  ballGirth:    number;
+  /** Calculated server-side — always sent as 0 */
+  instepGirth:  number;
 }
 
 // ─── Product ──────────────────────────────────────────────────────────────────

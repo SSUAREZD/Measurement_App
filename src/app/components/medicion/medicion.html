@@ -14,6 +14,76 @@
       <span class="distance-value">{{ distanceCm | number:'1.1-1' }} cm</span>
     </div>
 
+    <!-- Full-screen idle overlay — tap anywhere to start / see result -->
+    <div
+      *ngIf="state === 'idle'"
+      class="idle-overlay"
+      (click)="toggleTracking()"
+    >
+      <div class="idle-overlay-content">
+
+        <!-- All phases complete → show medians -->
+        <ng-container *ngIf="finalResult !== null">
+          <div class="meas-list">
+            <span class="meas-item">Largo del pie: {{ finalResult.footLength | number:'1.1-1' }} cm</span>
+            <span class="meas-item">Ancho antepié: {{ finalResult.ballWidth  | number:'1.1-1' }} cm</span>
+            <span class="meas-item">Ancho talón:   {{ finalResult.heelWidth  | number:'1.1-1' }} cm</span>
+          </div>
+          <button class="reset-btn" (click)="$event.stopPropagation(); resetMeasurements()">
+            Reiniciar mediciones
+          </button>
+          <span class="idle-sub">Toca para medir de nuevo</span>
+        </ng-container>
+
+        <!-- In progress or fresh start -->
+        <ng-container *ngIf="finalResult === null">
+          <span class="idle-main">
+            {{ phasesCompleted === 0 && measurementNumber === 1 ? 'Iniciar medición' : currentPhaseLabel }}
+          </span>
+
+          <!-- Samples collected in current phase -->
+          <div class="meas-list" *ngIf="measurementNumber > 1">
+            <span *ngFor="let s of footLengthSamples; let i = index" class="meas-item" [style.display]="phasesCompleted === 0 ? '' : 'none'">
+              {{ i + 1 }}. {{ s | number:'1.1-1' }} cm
+            </span>
+            <span *ngFor="let s of ballWidthSamples; let i = index" class="meas-item" [style.display]="phasesCompleted === 1 ? '' : 'none'">
+              {{ i + 1 }}. {{ s | number:'1.1-1' }} cm
+            </span>
+            <span *ngFor="let s of heelWidthSamples; let i = index" class="meas-item" [style.display]="phasesCompleted === 2 ? '' : 'none'">
+              {{ i + 1 }}. {{ s | number:'1.1-1' }} cm
+            </span>
+          </div>
+
+          <!-- Completed phases summary -->
+          <div class="meas-list" *ngIf="phasesCompleted > 0">
+            <span *ngIf="footLength !== null" class="meas-item meas-done">Largo: {{ footLength | number:'1.1-1' }} cm</span>
+            <span *ngIf="ballWidth  !== null" class="meas-item meas-done">Antepié: {{ ballWidth | number:'1.1-1' }} cm</span>
+          </div>
+
+          <button *ngIf="phasesCompleted > 0 || measurementNumber > 1" class="reset-btn"
+            (click)="$event.stopPropagation(); resetMeasurements()">
+            Reiniciar mediciones
+          </button>
+          <span class="idle-sub">
+            {{ phasesCompleted === 0 && measurementNumber === 1 ? 'Toca para comenzar' : 'Toca para continuar' }}
+          </span>
+        </ng-container>
+
+      </div>
+    </div>
+
+    <!-- Full-screen calibration overlay -->
+    <div *ngIf="isCalibrating" class="calib-overlay">
+      <div class="calib-overlay-content">
+        <span class="calib-main">Calibrando…</span>
+        <div class="calib-bar-track calib-bar-overlay">
+          <div class="calib-bar-fill-white" [style.width.%]="calibProgress"></div>
+        </div>
+        <span class="calib-pct-overlay">{{ calibProgress }}%</span>
+        <span class="calib-sub">Mantenga el teléfono quieto</span>
+      </div>
+    </div>
+
     <!-- Full-screen speed overlay — tap anywhere to stop -->
     <div
       *ngIf="isTracking"
@@ -28,39 +98,28 @@
           <span *ngSwitchCase="'ok'"   class="speed-main">Velocidad correcta</span>
           <span *ngSwitchCase="'fast'" class="speed-main">Muy rápido</span>
         </ng-container>
-        <span class="speed-sub">{{ TARGET_SPEED_CM_S }} cm/s · Toca para detener</span>
+        <span class="speed-sub">{{ currentPhaseLabel }} {{ measurementNumber }}/3 · Toca para detener</span>
       </div>
     </div>
   </div>
 
-  <!-- Bottom controls -->
-  <div class="controls">
-
-    <!-- Calibration progress -->
-    <div *ngIf="isCalibrating" class="calibration-panel">
-      <p class="calib-label">Mantenga el teléfono quieto…</p>
-      <div class="calib-bar-track">
-        <div class="calib-bar-fill" [style.width.%]="calibProgress"></div>
-      </div>
-      <p class="calib-pct">{{ calibProgress }}%</p>
-    </div>
-
-    <!-- Invalidation notice -->
-    <div *ngIf="invalidated && !isTracking && !isCalibrating" class="invalidated-notice">
-      Medición inválida — movió demasiado rápido. Intente de nuevo.
-    </div>
+  <!-- Bottom controls (only during calibration / tracking) -->
+  <div *ngIf="!isIdle" class="controls">
 
     <button
-      class="track-button"
-      [class.tracking]="isTracking || isCalibrating"
+      class="track-button tracking"
       (click)="toggleTracking()"
     >
-      <ng-container *ngIf="state === 'idle'">Iniciar seguimiento</ng-container>
       <ng-container *ngIf="state === 'calibrating'">Cancelar calibración</ng-container>
       <ng-container *ngIf="state === 'tracking'">Detener seguimiento</ng-container>
     </button>
 
     <div *ngIf="showDebug && debugMotion" class="debug-motion">{{ debugMotion }}</div>
+  </div>
+
+  <!-- Invalidation notice (idle state, after bad measurement) -->
+  <div *ngIf="invalidated && isIdle" class="invalidated-bar">
+    Medición inválida — resultado fuera de rango (1–20 cm). Intente de nuevo.
   </div>
 
 </div>
