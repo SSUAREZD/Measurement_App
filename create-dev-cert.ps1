@@ -1,5 +1,5 @@
 param(
-  [string]$IpAddress = "192.168.78.104"
+  [string]$IpAddress = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -8,6 +8,25 @@ $mkcert = Get-Command mkcert -ErrorAction SilentlyContinue
 
 if (-not $mkcert) {
   throw "mkcert no esta instalado o no esta en PATH."
+}
+
+if ([string]::IsNullOrWhiteSpace($IpAddress)) {
+  $ipconfigOutput = ipconfig
+  $ipAddress = $ipconfigOutput |
+    Select-String 'IPv4 Address|Dirección IPv4' |
+    ForEach-Object {
+      if ($_.Line -match ':\s*([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)') {
+        $matches[1]
+      }
+    } |
+    Where-Object {
+      $_ -and $_ -notlike '127.*' -and $_ -notlike '169.254.*'
+    } |
+    Select-Object -First 1
+}
+
+if ([string]::IsNullOrWhiteSpace($IpAddress)) {
+  throw "No se pudo detectar una IPv4 activa. Conectate a la Wi-Fi y vuelve a intentar."
 }
 
 $certDir = Join-Path $PSScriptRoot "certs"
