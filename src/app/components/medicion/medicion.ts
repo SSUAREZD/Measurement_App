@@ -116,7 +116,7 @@ export class MedicionComponent implements AfterViewInit, OnDestroy {
   private calibSamples:  Array<{ x: number; y: number; z: number }> = [];
   private calibSamplesG: Array<{ x: number; y: number; z: number }> = [];
   private bias         = { x: 0, y: 0, z: 0 };
-  private adaptiveDZ   = 0.10; // m/s² — set to 3×noise-σ at end of calibration
+  private adaptiveDZ   = 0.02; // m/s² — set to 3×noise-σ at end of calibration
   private settleFrames = 0;    // frames remaining where velocity is forced to zero
   // Unit vector pointing in the gravity direction (updated each calibration)
   private gravityUnit  = { x: 0, y: 1, z: 0 };
@@ -369,7 +369,7 @@ export class MedicionComponent implements AfterViewInit, OnDestroy {
         const varX = this.calibSamples.reduce((s, v) => s + (v.x - this.bias.x) ** 2, 0) / n;
         const varY = this.calibSamples.reduce((s, v) => s + (v.y - this.bias.y) ** 2, 0) / n;
         const varZ = this.calibSamples.reduce((s, v) => s + (v.z - this.bias.z) ** 2, 0) / n;
-        this.adaptiveDZ = Math.max(0.03, 2 * Math.sqrt((varX + varY + varZ) / 3));
+        this.adaptiveDZ = Math.max(0.08, 2 * Math.sqrt((varX + varY + varZ) / 3));
 
         this.totalDistanceCm        = 0;
         this.distanceCm             = 0;
