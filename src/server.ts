@@ -9,6 +9,14 @@ const browserDistFolder = resolve(serverDistFolder, '../browser');
 const app = express();
 const angularApp = new AngularNodeAppEngine();
 
+app.get('/health', (_req, res) => {
+  res.status(200).json({
+    status: 'ok',
+    service: 'measurement-app',
+    timestamp: new Date().toISOString(),
+  });
+});
+
 /**
  * Serve static files from /browser
  */
@@ -39,7 +47,7 @@ app.use('**', createNodeRequestHandler(async (req, res, next) => {
 if (isMainModule(import.meta.url)) {
   const port = process.env['PORT'] || 4000;
   app.listen(port, () => {
-    console.log(`Node Express server listening on http://localhost:${port}`);
+    console.log(`Node Express server listening on http://0.0.0.0:${port}`);
   });
 }
 

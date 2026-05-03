@@ -17,37 +17,66 @@
   </div>
 
   <div *ngIf="state === 'manual-selection'" class="manual-card">
-    <img src="thoth_standing.png" alt="Thoth" class="thoth-image" />
-    <h2>Selecciona tu celular manualmente</h2>
-    <p class="welcome-text">
-      No pudimos detectar de forma confiable la marca y el modelo desde el navegador.
-      Elige tu teléfono para continuar.
-    </p>
+    <div class="manual-card__visual">
+      <img src="thoth_standing.png" alt="Thoth" class="thoth-image thoth-image--manual" />
+      <div class="manual-chip">Detección manual</div>
+    </div>
 
-    <label class="field-label" for="brand-select">Marca</label>
-    <select
-      id="brand-select"
-      class="select-field"
-      [(ngModel)]="selectedBrand"
-      (ngModelChange)="onBrandChange()"
-    >
-      <option value="" disabled>Selecciona una marca</option>
-      <option *ngFor="let brand of availableBrands" [value]="brand">{{ brand }}</option>
-    </select>
+    <div class="manual-card__header">
+      <h2>Selecciona tu celular</h2>
+      <p class="welcome-text">
+        No pudimos detectar de forma confiable la marca y el modelo desde el navegador.
+        Elige tu teléfono compatible para continuar con la medición.
+      </p>
+    </div>
 
-    <label class="field-label" for="model-select">Modelo</label>
-    <select
-      id="model-select"
-      class="select-field"
-      [(ngModel)]="selectedPhoneName"
-      [disabled]="!selectedBrand"
-    >
-      <option value="" disabled>Selecciona un modelo</option>
-      <option *ngFor="let phone of availableModels" [value]="phone.name">{{ phone.name }}</option>
-    </select>
+    <div class="manual-steps">
+      <div class="manual-step">
+        <span>1</span>
+        <p>Escoge la marca del celular.</p>
+      </div>
+      <div class="manual-step">
+        <span>2</span>
+        <p>Selecciona el modelo exacto.</p>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label" for="brand-select">Marca</label>
+      <select
+        id="brand-select"
+        class="select-field"
+        [(ngModel)]="selectedBrand"
+        (ngModelChange)="onBrandChange()"
+      >
+        <option value="" disabled>Selecciona una marca</option>
+        <option *ngFor="let brand of availableBrands" [value]="brand">{{ brand }}</option>
+      </select>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label" for="model-select">Modelo</label>
+      <select
+        id="model-select"
+        class="select-field"
+        [(ngModel)]="selectedPhoneName"
+        [disabled]="!selectedBrand"
+      >
+        <option value="" disabled>Selecciona un modelo</option>
+        <option *ngFor="let phone of availableModels" [value]="phone.name">{{ phone.name }}</option>
+      </select>
+    </div>
+
+    <div class="manual-summary" *ngIf="selectedBrand || selectedPhoneName">
+      <strong>Selección actual</strong>
+      <span>
+        {{ selectedBrand || 'Marca pendiente' }}
+        <ng-container *ngIf="selectedPhoneName"> - {{ selectedPhoneName }}</ng-container>
+      </span>
+    </div>
 
     <button
-      class="start-button"
+      class="start-button start-button--full"
       (click)="onManualSelectionContinue()"
       [disabled]="!selectedBrand || !selectedPhoneName"
     >
@@ -67,16 +96,4 @@
     <button class="start-button secondary-button" (click)="onPruebaMedicion()">Prueba medición</button>
   </div>
 
-</div>
-
-<div *ngIf="debug" class="debug-panel">
-  <strong>DEBUG</strong>
-  <div>state: {{ state }}</div>
-  <div>type: {{ debug.device.type }}</div>
-  <div>brand: {{ debug.device.brand }}</div>
-  <div>model: {{ debug.device.model }}</div>
-  <div>os: {{ debug.device.os }}</div>
-  <div>lookup skipped: {{ debug.lookupSkipped }}</div>
-  <div *ngIf="debug.fallbackReason">fallback: {{ debug.fallbackReason }}</div>
-  <div *ngIf="debug.apiError">api error: {{ debug.apiError }}</div>
 </div>

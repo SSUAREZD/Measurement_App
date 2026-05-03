@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { EMPTY, Observable, catchError, concatMap, defaultIfEmpty, from, map, take } from 'rxjs';
 import { DeviceDetectorService, DeviceInfo } from '../../services/device-detector.service';
 import { PhoneService } from '../../services/phone.service';
 import { PhoneDTO } from '../../models/models';
@@ -62,9 +63,15 @@ export class HomeComponent implements OnInit {
       return;
     }
 
-    this.phoneService.getByBrandAndName(device.brand, device.model).subscribe({
+    this.lookupPhone(device.brand, device.model).subscribe({
       next: (phone) => {
-        this.proceedToApp(phone);
+        if (phone) {
+          this.proceedToApp(phone);
+          return;
+        }
+
+        this.debug!.fallbackReason = 'automatic-lookup-failed';
+        this.enableManualSelection();
       },
       error: (err) => {
         this.debug!.apiError = `${err.status} ${err.message}`;
@@ -166,5 +173,28 @@ export class HomeComponent implements OnInit {
     this.phone = phone;
     this.state = 'supported-phone';
     this.router.navigate(['/medicion']);
+  }
+
+  private lookupPhone(brand: string, model: string): Observable<PhoneDTO | null> {
+    const candidates = this.getPhoneLookupCandidates(brand, model);
+
+    return from(candidates).pipe(
+      concatMap((candidate) =>
+        this.phoneService.getByBrandAndName(brand, candidate).pipe(
+          map((phone) => phone),
+          catchError(() => EMPTY),
+        ),
+      ),
+      take(1),
+      defaultIfEmpty(null),
+    );
+  }
+
+  private getPhoneLookupCandidates(brand: string, model: string): string[] {
+    if (brand === 'Apple' && model === 'iPhone 11 / XR') {
+      return ['iPhone 11', 'iPhone XR'];
+    }
+
+    return [model];
   }
 }
