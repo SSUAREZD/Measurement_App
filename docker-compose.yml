@@ -1,7 +1,4 @@
-version: '3.8'
-
 services:
-  # PostgreSQL Database
   postgres:
     image: postgres:16-alpine
     container_name: thoth-db
@@ -19,10 +16,9 @@ services:
       timeout: 5s
       retries: 5
 
-  # Spring Boot Backend
   backend:
     build:
-      context: ../Thoth_Back  # Ajusta la ruta a tu proyecto backend
+      context: ../Thoth_Back
       dockerfile: Dockerfile
     container_name: thoth-backend
     environment:
@@ -39,7 +35,6 @@ services:
     networks:
       - thoth-network
 
-  # Angular Frontend
   frontend:
     build:
       context: .
@@ -51,9 +46,6 @@ services:
       - backend
     networks:
       - thoth-network
-    environment:
-      API_URL: http://backend:8080/api
-      APP_URL: http://frontend:4202
 
 volumes:
   postgres_data:
