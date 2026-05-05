@@ -79,7 +79,8 @@
             "port": 4202,
             "host": "0.0.0.0",
             "ssl": true,
-            "proxyConfig": "proxy.conf.json"
+            "proxyConfig": "proxy.conf.json",
+            "allowedHosts": ["localhost", "127.0.0.1", "192.168.2.193"]
           }
         },
         "extract-i18n": {
