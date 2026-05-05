@@ -28,8 +28,9 @@
           </span>
 
           <div class="meas-list" *ngIf="phasesCompleted > 0">
-            <span *ngIf="footLength !== null" class="meas-item meas-done">Largo: {{ footLength | number:'1.1-1' }} cm</span>
-            <span *ngIf="ballWidth  !== null" class="meas-item meas-done">Antepié: {{ ballWidth | number:'1.1-1' }} cm</span>
+            <span *ngIf="footLength1 !== null" class="meas-item meas-done">M1: {{ footLength1 | number:'1.1-1' }} cm</span>
+            <span *ngIf="footLength2 !== null" class="meas-item meas-done">M2: {{ footLength2 | number:'1.1-1' }} cm</span>
+            <span *ngIf="footLength3 !== null" class="meas-item meas-done">M3: {{ footLength3 | number:'1.1-1' }} cm</span>
           </div>
 
           <span class="phase-counter">{{ phasesCompleted + 1 }} / 3</span>
@@ -104,9 +105,10 @@
   <!-- Results panel — shown only after all 3 phases are complete -->
   <div *ngIf="phasesCompleted === 3" class="results-panel">
     <div class="results-measurements">
-      <span>Largo del pie: <strong>{{ footLength | number:'1.1-1' }} cm</strong></span>
-      <span>Ancho antepié: <strong>{{ ballWidth  | number:'1.1-1' }} cm</strong></span>
-      <span>Ancho talón:   <strong>{{ heelWidth  | number:'1.1-1' }} cm</strong></span>
+      <span>Medición 1: <strong>{{ footLength1 | number:'1.1-1' }} cm</strong></span>
+      <span>Medición 2: <strong>{{ footLength2 | number:'1.1-1' }} cm</strong></span>
+      <span>Medición 3: <strong>{{ footLength3 | number:'1.1-1' }} cm</strong></span>
+      <span>Promedio: <strong>{{ (((footLength1 || 0) + (footLength2 || 0) + (footLength3 || 0)) / 3) | number:'1.1-1' }} cm</strong></span>
     </div>
 
     <!-- Estado del guardado -->

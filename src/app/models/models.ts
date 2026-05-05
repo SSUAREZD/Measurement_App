@@ -51,14 +51,7 @@ export interface FeetMeasurement {
   bodyPart?: string;  // FEET
   side?: string;      // LEFT, RIGHT, BOTH
   units?: string;     // CM, INCHES
-  sex?: string;       // MALE, FEMALE
-  footLength:   number;
-  ballWidth:    number;
-  heelWidth:    number;
-  /** Calculated server-side — always sent as 0 */
-  ballGirth:    number;
-  /** Calculated server-side — always sent as 0 */
-  instepGirth:  number;
+  footLength: number;
 }
 
 export type FeetMeasurementDTO = FeetMeasurement;

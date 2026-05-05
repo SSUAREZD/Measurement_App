@@ -41,46 +41,31 @@ export class MedicionComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  // ── 3-phase measurement (1 sample each) ──────────────────────────────────
-  // Phase order: footLength → ballWidth → heelWidth
-  // ballGirth and instepGirth are always sent as 0 (calculated server-side).
+  // ── 3-phase measurement (footLength 3 times) ────────────────────────────────
   footLengthSamples: number[] = [];
-  ballWidthSamples:  number[] = [];
-  heelWidthSamples:  number[] = [];
 
-  private readonly PHASE_LABELS = ['Largo del pie', 'Ancho del antepié', 'Ancho del talón'];
+  private readonly PHASE_LABELS = ['Medición 1', 'Medición 2', 'Medición 3'];
 
-  get footLength(): number | null { return this.footLengthSamples.length >= 1 ? this.footLengthSamples[0] : null; }
-  get ballWidth():  number | null { return this.ballWidthSamples.length  >= 1 ? this.ballWidthSamples[0]  : null; }
-  get heelWidth():  number | null { return this.heelWidthSamples.length  >= 1 ? this.heelWidthSamples[0]  : null; }
+  get footLength1(): number | null { return this.footLengthSamples.length >= 1 ? this.footLengthSamples[0] : null; }
+  get footLength2(): number | null { return this.footLengthSamples.length >= 2 ? this.footLengthSamples[1] : null; }
+  get footLength3(): number | null { return this.footLengthSamples.length >= 3 ? this.footLengthSamples[2] : null; }
 
-  get phasesCompleted(): number {
-    return (this.footLengthSamples.length >= 1 ? 1 : 0) +
-           (this.ballWidthSamples.length  >= 1 ? 1 : 0) +
-           (this.heelWidthSamples.length  >= 1 ? 1 : 0);
-  }
+  get phasesCompleted(): number { return this.footLengthSamples.length; }
 
   private get currentPhaseSamples(): number[] | null {
-    if (this.footLengthSamples.length === 0) return this.footLengthSamples;
-    if (this.ballWidthSamples.length  === 0) return this.ballWidthSamples;
-    if (this.heelWidthSamples.length  === 0) return this.heelWidthSamples;
-    return null;
+    return this.footLengthSamples.length < 3 ? this.footLengthSamples : null;
   }
 
   get currentPhaseLabel(): string { return this.PHASE_LABELS[this.phasesCompleted] ?? ''; }
 
   get finalResult(): FeetMeasurement | null {
-    const fl = this.footLength, bw = this.ballWidth, hw = this.heelWidth;
-    if (fl === null || bw === null || hw === null) return null;
+    if (this.phasesCompleted < 3) return null;
+    const avg = (this.footLength1! + this.footLength2! + this.footLength3!) / 3;
     return {
       bodyPart: 'FEET',
       side: 'BOTH',
       units: 'CM',
-      footLength: fl,
-      ballWidth: bw,
-      heelWidth: hw,
-      ballGirth: 0,
-      instepGirth: 0,
+      footLength: avg,
     };
   }
 
@@ -123,8 +108,6 @@ export class MedicionComponent implements OnInit, AfterViewInit, OnDestroy {
 
   resetMeasurements(): void {
     this.footLengthSamples     = [];
-    this.ballWidthSamples      = [];
-    this.heelWidthSamples      = [];
     this.distanceCm            = 0;
     this.totalDistanceCm       = 0;
     this.lastDistanceChangedAt = 0;
