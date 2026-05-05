@@ -61,12 +61,7 @@ export class MedicionComponent implements OnInit, AfterViewInit, OnDestroy {
   get finalResult(): FeetMeasurement | null {
     if (this.phasesCompleted < 3) return null;
     const avg = (this.footLength1! + this.footLength2! + this.footLength3!) / 3;
-    return {
-      bodyPart: 'FEET',
-      side: 'BOTH',
-      units: 'CM',
-      footLength: avg,
-    };
+    return { footLength: avg };
   }
 
   private saveMeasurement(): void {
