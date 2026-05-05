@@ -1,7 +1,10 @@
-import { Component, AfterViewInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Component, AfterViewInit, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
 import { Navbar } from '../navbar/navbar';
 import { FeetMeasurement } from '../../models/models';
+import { MeasurementService } from '../../services/measurement.service';
+import { environment } from '../../../environments/environment';
 
 type MedicionState = 'idle' | 'calibrating' | 'tracking';
 type SpeedStatus   = 'idle' | 'slow' | 'ok' | 'fast';
@@ -12,7 +15,7 @@ type SpeedStatus   = 'idle' | 'slow' | 'ok' | 'fast';
   templateUrl: './medicion.html',
   styleUrl: './medicion.css',
 })
-export class MedicionComponent implements AfterViewInit, OnDestroy {
+export class MedicionComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('cameraPreview') cameraPreview!: ElementRef<HTMLVideoElement>;
 
   state: MedicionState     = 'idle';
@@ -24,50 +27,45 @@ export class MedicionComponent implements AfterViewInit, OnDestroy {
   debugMotion: string | null = null;
   readonly showDebug = false;
 
-  // ── 3-phase measurement (3 samples each → median) ─────────────────────────
-  // Phase order: footLength → ballWidth → heelWidth
-  // ballGirth and instepGirth are always sent as 0 (calculated server-side).
+  userId: string | null = null;
+  submitStatus: 'idle' | 'submitting' | 'done' | 'error' = 'idle';
+
+  constructor(
+    private route: ActivatedRoute,
+    private measurementService: MeasurementService,
+  ) {}
+
+  ngOnInit(): void {
+    if (typeof window !== 'undefined') {
+      this.userId = new URLSearchParams(window.location.search).get('userId');
+    } else {
+      this.route.queryParamMap.subscribe(params => {
+        this.userId = params.get('userId');
+      });
+    }
+  }
+
+  // ── 3-phase measurement (footLength 3 times) ────────────────────────────────
   footLengthSamples: number[] = [];
-  ballWidthSamples:  number[] = [];
-  heelWidthSamples:  number[] = [];
 
-  private readonly PHASE_LABELS = ['Largo del pie', 'Ancho del antepié', 'Ancho del talón'];
+  private readonly PHASE_LABELS = ['Medición 1', 'Medición 2', 'Medición 3'];
 
-  private weightedAverage(s: number[]): number {
-    const sorted = [...s].sort((a, b) => a - b);
-    // Weights [0.25, 0.50, 0.25]: middle sample counts double, outliers dampened
-    const result = sorted[0] * 0.25 + sorted[1] * 0.50 + sorted[2] * 0.25;
-    return Math.round(result * 10) / 10;
-  }
+  get footLength1(): number | null { return this.footLengthSamples.length >= 1 ? this.footLengthSamples[0] : null; }
+  get footLength2(): number | null { return this.footLengthSamples.length >= 2 ? this.footLengthSamples[1] : null; }
+  get footLength3(): number | null { return this.footLengthSamples.length >= 3 ? this.footLengthSamples[2] : null; }
 
-  // Computed weighted average for each phase (null until 3 samples collected)
-  get footLength(): number | null { return this.footLengthSamples.length >= 3 ? this.weightedAverage(this.footLengthSamples) : null; }
-  get ballWidth():  number | null { return this.ballWidthSamples.length  >= 3 ? this.weightedAverage(this.ballWidthSamples)  : null; }
-  get heelWidth():  number | null { return this.heelWidthSamples.length  >= 3 ? this.weightedAverage(this.heelWidthSamples)  : null; }
-
-  /** How many phases have all 3 samples (0–3). */
-  get phasesCompleted(): number {
-    return (this.footLengthSamples.length >= 3 ? 1 : 0) +
-           (this.ballWidthSamples.length  >= 3 ? 1 : 0) +
-           (this.heelWidthSamples.length  >= 3 ? 1 : 0);
-  }
+  get phasesCompleted(): number { return this.footLengthSamples.length; }
 
   private get currentPhaseSamples(): number[] | null {
-    if (this.footLengthSamples.length < 3) return this.footLengthSamples;
-    if (this.ballWidthSamples.length  < 3) return this.ballWidthSamples;
-    if (this.heelWidthSamples.length  < 3) return this.heelWidthSamples;
-    return null;
+    return this.footLengthSamples.length < 3 ? this.footLengthSamples : null;
   }
-
-  /** Sub-measurement number within the current phase (1–3). */
-  get measurementNumber(): number { return (this.currentPhaseSamples?.length ?? 3) + 1; }
 
   get currentPhaseLabel(): string { return this.PHASE_LABELS[this.phasesCompleted] ?? ''; }
 
   get finalResult(): FeetMeasurement | null {
-    const fl = this.footLength, bw = this.ballWidth, hw = this.heelWidth;
-    if (fl === null || bw === null || hw === null) return null;
-    return { footLength: fl, ballWidth: bw, heelWidth: hw, ballGirth: 0, instepGirth: 0 };
+    if (this.phasesCompleted < 3) return null;
+    const avg = (this.footLength1! + this.footLength2! + this.footLength3!) / 3;
+    return { footLength: avg };
   }
 
   private saveMeasurement(): void {
@@ -82,15 +80,39 @@ export class MedicionComponent implements AfterViewInit, OnDestroy {
       return;
     }
     this.currentPhaseSamples?.push(this.distanceCm);
+    // All 3 phases done — show confirmation button (user will click to save)
+  }
+
+  submitMeasurement(): void {
+    const result = this.finalResult;
+    if (!result || !this.userId) {
+      this.submitStatus = 'error';
+      return;
+    }
+    this.submitStatus = 'submitting';
+    this.measurementService.createFeetMeasurement(this.userId, result).subscribe({
+      next: () => { this.submitStatus = 'done'; },
+      error: () => { this.submitStatus = 'error'; },
+    });
+  }
+
+  retrySubmit(): void {
+    this.submitStatus = 'idle';
+    this.submitMeasurement();
+  }
+
+  goToRecommendation(): void {
+    const base = environment.recommendationAppUrl;
+    const url = this.userId ? `${base}?userId=${this.userId}` : base;
+    window.location.href = url;
   }
 
   resetMeasurements(): void {
     this.footLengthSamples     = [];
-    this.ballWidthSamples      = [];
-    this.heelWidthSamples      = [];
     this.distanceCm            = 0;
     this.totalDistanceCm       = 0;
     this.lastDistanceChangedAt = 0;
+    this.submitStatus          = 'idle';
   }
 
   get isIdle()        { return this.state === 'idle'; }
@@ -307,8 +329,8 @@ export class MedicionComponent implements AfterViewInit, OnDestroy {
       return;
     }
 
-    // Auto-reset after all 3 phases are complete
-    if (this.finalResult !== null) this.resetMeasurements();
+    // All 3 phases done — wait for explicit confirm/reset, ignore overlay taps
+    if (this.finalResult !== null) return;
 
     this.invalidated = false;
 

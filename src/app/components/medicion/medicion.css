@@ -114,6 +114,13 @@
   text-shadow: 0 1px 3px rgba(0,0,0,0.5);
 }
 
+.phase-counter {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
 .reset-btn {
   margin-top: 0.25rem;
   padding: 0.45rem 1.2rem;
@@ -323,4 +330,121 @@
   padding: 0.3rem 0.5rem;
   border-radius: 6px;
   word-break: break-all;
+}
+
+/* ── Results panel ───────────────────────────────────────────────────────── */
+
+.results-panel {
+  background: #111;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.results-measurements {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  color: #fff;
+  font-size: 0.95rem;
+}
+
+.results-measurements strong {
+  color: #2ecc71;
+}
+
+.submit-msg {
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.3rem 0.8rem;
+  border-radius: 8px;
+}
+
+.submit-msg--loading { color: #aaa; }
+.submit-msg--ok      { color: #2ecc71; }
+.submit-msg--err     { color: #e74c3c; display: flex; align-items: center; gap: 0.4rem; }
+.submit-msg--warn    { color: #f39c12; }
+
+.action-btn {
+  pointer-events: all;
+  width: 100%;
+  max-width: 360px;
+  padding: 0.85rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.action-btn--primary {
+  background-color: #2980b9;
+  color: #fff;
+}
+
+.action-btn--primary:hover  { background-color: #2471a3; }
+
+.action-btn--secondary {
+  background-color: #1a1a2e;
+  color: #fff;
+}
+
+.action-btn--secondary:hover { background-color: #16213e; }
+
+.link-btn {
+  background: none;
+  border: none;
+  color: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: inherit;
+  font-weight: inherit;
+  padding: 0;
+}
+
+/* ── Recommendation result ───────────────────────────────────────────────── */
+
+.recommendation-box {
+  width: 100%;
+  max-width: 360px;
+  text-align: center;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  background: #1a1a2e;
+}
+
+.recommend-fits {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.recommend-label {
+  color: rgba(255,255,255,0.7);
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.recommend-size {
+  color: #2ecc71;
+  font-size: 2.8rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.recommend-nofit {
+  color: #e74c3c;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.recommend-noinfo {
+  color: rgba(255,255,255,0.5);
+  font-size: 0.9rem;
 }
