@@ -1,22 +1,21 @@
-# Este es el Dockerfile para el backend - cópialo a tu proyecto Thoth_Back
-
 # Build stage
-FROM maven:3.9-eclipse-temurin-21 AS builder
+FROM gradle:8.5-jdk17 AS builder
 
 WORKDIR /app
 
-COPY pom.xml .
-RUN mvn dependency:go-offline
+COPY build.gradle settings.gradle ./
+COPY gradle ./gradle
+RUN gradle dependencies --no-daemon || true
 
 COPY src ./src
-RUN mvn clean package -DskipTests
+RUN gradle bootJar --no-daemon
 
 # Runtime stage
-FROM eclipse-temurin:21-jre-alpine
+FROM eclipse-temurin:17-jre-alpine
 
 WORKDIR /app
 
-COPY --from=builder /app/target/*.jar app.jar
+COPY --from=builder /app/build/libs/*.jar app.jar
 
 EXPOSE 8080
 
