@@ -18,7 +18,7 @@ services:
 
   backend:
     build:
-      context: ../Thoth_Back
+      context: ../thoth-back
       dockerfile: Dockerfile
     container_name: thoth-backend
     environment:
