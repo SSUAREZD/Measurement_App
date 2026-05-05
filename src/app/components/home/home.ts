@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { EMPTY, Observable, catchError, concatMap, defaultIfEmpty, from, map, take } from 'rxjs';
 import { DeviceDetectorService, DeviceInfo } from '../../services/device-detector.service';
 import { PhoneService } from '../../services/phone.service';
@@ -36,13 +36,17 @@ export class HomeComponent implements OnInit {
     fallbackReason: string | null;
   } | null = null;
 
+  private userId: string | null = null;
+
   constructor(
     private deviceDetector: DeviceDetectorService,
     private phoneService: PhoneService,
     private router: Router,
+    private route: ActivatedRoute,
   ) {}
 
   ngOnInit(): void {
+    this.userId = new URLSearchParams(window.location.search).get('userId');
     const device = this.deviceDetector.device;
     this.debug = {
       device,
@@ -131,12 +135,12 @@ export class HomeComponent implements OnInit {
 
   async onStart(): Promise<void> {
     await this.requestPermissions();
-    this.router.navigate(['/medicion']);
+    this.router.navigate(['/medicion'], { queryParams: this.userId ? { userId: this.userId } : {} });
   }
 
   async onPruebaMedicion(): Promise<void> {
     await this.requestPermissions();
-    this.router.navigate(['/medicion']);
+    this.router.navigate(['/medicion'], { queryParams: this.userId ? { userId: this.userId } : {} });
   }
 
   private hasReliableDeviceInfo(brand: string, model: string): boolean {
@@ -172,7 +176,7 @@ export class HomeComponent implements OnInit {
   private proceedToApp(phone: PhoneDTO): void {
     this.phone = phone;
     this.state = 'supported-phone';
-    this.router.navigate(['/medicion']);
+    this.router.navigate(['/medicion'], { queryParams: this.userId ? { userId: this.userId } : {} });
   }
 
   private lookupPhone(brand: string, model: string): Observable<PhoneDTO | null> {

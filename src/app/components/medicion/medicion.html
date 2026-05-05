@@ -146,6 +146,9 @@
       <button class="link-btn" (click)="retrySubmit()">Reintentar</button>
     </div>
 
+    <div *ngIf="submitStatus === 'done'" class="submit-msg submit-msg--ok">
+      ✓ Medición guardada exitosamente
+    </div>
     <button *ngIf="submitStatus === 'done'"
       class="action-btn action-btn--primary" (click)="goToRecommendation()">
       Ver recomendación de talla

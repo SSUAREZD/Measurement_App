@@ -36,9 +36,13 @@ export class MedicionComponent implements OnInit, AfterViewInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.route.queryParamMap.subscribe(params => {
-      this.userId = params.get('userId');
-    });
+    if (typeof window !== 'undefined') {
+      this.userId = new URLSearchParams(window.location.search).get('userId');
+    } else {
+      this.route.queryParamMap.subscribe(params => {
+        this.userId = params.get('userId');
+      });
+    }
   }
 
   // ── 3-phase measurement (footLength 3 times) ────────────────────────────────
@@ -81,7 +85,10 @@ export class MedicionComponent implements OnInit, AfterViewInit, OnDestroy {
 
   submitMeasurement(): void {
     const result = this.finalResult;
-    if (!result || !this.userId) return;
+    if (!result || !this.userId) {
+      this.submitStatus = 'error';
+      return;
+    }
     this.submitStatus = 'submitting';
     this.measurementService.createFeetMeasurement(this.userId, result).subscribe({
       next: () => { this.submitStatus = 'done'; },
@@ -322,8 +329,8 @@ export class MedicionComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    // Auto-reset after all 3 phases are complete
-    if (this.finalResult !== null) this.resetMeasurements();
+    // All 3 phases done — wait for explicit confirm/reset, ignore overlay taps
+    if (this.finalResult !== null) return;
 
     this.invalidated = false;
 

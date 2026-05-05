@@ -369,6 +369,7 @@
 .submit-msg--warn    { color: #f39c12; }
 
 .action-btn {
+  pointer-events: all;
   width: 100%;
   max-width: 360px;
   padding: 0.85rem 1.5rem;
