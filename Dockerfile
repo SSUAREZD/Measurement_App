@@ -7,12 +7,12 @@ COPY package*.json ./
 RUN npm ci
 
 COPY . .
-RUN npm run build -- --configuration production
+RUN npm run build
 
 # Runtime stage
 FROM nginx:alpine
 
-COPY --from=builder /app/dist/measurement-app/browser /usr/share/nginx/html
+COPY --from=builder /app/dist/measurement-app /usr/share/nginx/html
 
 COPY nginx.conf /etc/nginx/nginx.conf
 
