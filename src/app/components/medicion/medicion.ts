@@ -81,11 +81,10 @@ export class MedicionComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
     this.currentPhaseSamples?.push(this.distanceCm);
-    // All 3 phases done — save to backend and show the button
-    if (this.finalResult !== null) this.submitMeasurement();
+    // All 3 phases done — show confirmation button (user will click to save)
   }
 
-  private submitMeasurement(): void {
+  submitMeasurement(): void {
     const result = this.finalResult;
     if (!result || !this.userId) return;
     this.submitStatus = 'submitting';

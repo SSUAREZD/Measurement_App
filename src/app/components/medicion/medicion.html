@@ -46,7 +46,33 @@
         </ng-container>
 
         <ng-container *ngIf="phasesCompleted === 3">
-          <span class="idle-sub">Medición completada · Toca para medir de nuevo</span>
+          <span class="idle-main">Mediciones completadas</span>
+          <div class="meas-list">
+            <span class="meas-item meas-done">M1: {{ footLength1 | number:'1.1-1' }} cm</span>
+            <span class="meas-item meas-done">M2: {{ footLength2 | number:'1.1-1' }} cm</span>
+            <span class="meas-item meas-done">M3: {{ footLength3 | number:'1.1-1' }} cm</span>
+          </div>
+
+          <div *ngIf="submitStatus === 'idle'" class="confirmation-buttons">
+            <button class="action-btn action-btn--primary" (click)="$event.stopPropagation(); submitMeasurement()">
+              Confirmar y guardar
+            </button>
+            <button class="action-btn action-btn--secondary" (click)="$event.stopPropagation(); resetMeasurements()">
+              Tomar de nuevo
+            </button>
+          </div>
+
+          <div *ngIf="submitStatus === 'submitting'" class="submit-msg submit-msg--loading">
+            Guardando medición...
+          </div>
+          <div *ngIf="submitStatus === 'error'" class="submit-msg submit-msg--err">
+            Error al guardar — <button class="link-btn" (click)="$event.stopPropagation(); submitMeasurement()">Reintentar</button>
+          </div>
+          <div *ngIf="submitStatus === 'done'" class="submit-msg submit-msg--ok">
+            ✓ Medición guardada
+          </div>
+
+          <span class="idle-sub" *ngIf="submitStatus === 'idle'">Revisa las medidas antes de guardar</span>
         </ng-container>
 
       </div>
