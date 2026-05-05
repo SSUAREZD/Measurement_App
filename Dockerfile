@@ -1,4 +1,5 @@
-FROM node:20-bookworm-slim AS build
+# Build stage
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
@@ -6,20 +7,15 @@ COPY package*.json ./
 RUN npm ci
 
 COPY . .
-RUN npm run build:prod
+RUN npm run build -- --configuration production
 
-FROM node:20-bookworm-slim AS runtime
+# Runtime stage
+FROM nginx:alpine
 
-WORKDIR /app
+COPY --from=builder /app/dist/measurement-app/browser /usr/share/nginx/html
 
-ENV NODE_ENV=production
-ENV PORT=4000
+COPY nginx.conf /etc/nginx/nginx.conf
 
-COPY package*.json ./
-RUN npm ci --omit=dev && npm cache clean --force
+EXPOSE 80
 
-COPY --from=build /app/dist ./dist
-
-EXPOSE 4000
-
-CMD ["node", "dist/measurement-app/server/server.mjs"]
+CMD ["nginx", "-g", "daemon off;"]

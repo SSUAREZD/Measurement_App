@@ -1,12 +1,63 @@
+version: '3.8'
+
 services:
-  measurement-app:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: thoth-db
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: thot_user
+      POSTGRES_PASSWORD: Thoth123*
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U thot_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Spring Boot Backend
+  backend:
+    build:
+      context: ../Thoth_Back  # Ajusta la ruta a tu proyecto backend
+      dockerfile: Dockerfile
+    container_name: thoth-backend
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/postgres
+      SPRING_DATASOURCE_USERNAME: thot_user
+      SPRING_DATASOURCE_PASSWORD: Thoth123*
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SERVER_PORT: 8080
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - thoth-network
+
+  # Angular Frontend
+  frontend:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: measurement-app
-    restart: always
+    container_name: thoth-frontend
     ports:
-      - "4000:4000"
+      - "4202:80"
+    depends_on:
+      - backend
+    networks:
+      - thoth-network
     environment:
-      NODE_ENV: production
-      PORT: 4000
+      API_URL: http://backend:8080/api
+      APP_URL: http://frontend:4202
+
+volumes:
+  postgres_data:
+
+networks:
+  thoth-network:
+    driver: bridge

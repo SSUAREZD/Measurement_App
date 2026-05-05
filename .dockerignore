@@ -1,11 +1,11 @@
 node_modules
 dist
-.angular
 .git
 .gitignore
+README.md
+.angular
 .vscode
-certs
+.env
+.env.local
 npm-debug.log
-Dockerfile*
-docker-compose*.yml
-docker-compose*.yaml
+package-lock.json
