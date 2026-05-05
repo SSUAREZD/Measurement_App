@@ -1,11 +1,11 @@
-node_modules
-dist
+node_modules/
+dist/
 .git
 .gitignore
 README.md
-.angular
+.angular/
 .vscode
 .env
 .env.local
 npm-debug.log
-package-lock.json
+certs/

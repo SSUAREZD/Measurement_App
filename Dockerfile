@@ -1,21 +1,17 @@
-# Build stage
-FROM node:20-alpine AS builder
-
+FROM node:20-alpine AS build
 WORKDIR /app
-
 COPY package*.json ./
 RUN npm ci
-
 COPY . .
 RUN npm run build
 
-# Runtime stage
 FROM nginx:alpine
-
-COPY --from=builder /app/dist/measurement-app /usr/share/nginx/html
-
-COPY nginx.conf /etc/nginx/nginx.conf
-
-EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
+RUN apk add --no-cache openssl && \
+    mkdir -p /etc/nginx/ssl && \
+    openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+      -keyout /etc/nginx/ssl/cert.key \
+      -out /etc/nginx/ssl/cert.crt \
+      -subj "/CN=localhost/O=Thoth/C=CO"
+COPY --from=build /app/dist/measurement-app/browser /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 443

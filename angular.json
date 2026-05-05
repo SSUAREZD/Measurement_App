@@ -44,7 +44,7 @@
                   "maximumError": "16kB"
                 }
               ],
-              "outputHashing": "all",
+              "outputHashing": true,
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
@@ -76,7 +76,7 @@
             "host": "0.0.0.0",
             "ssl": true,
             "proxyConfig": "proxy.conf.json",
-            "allowedHosts": ["localhost", "127.0.0.1", "192.168.2.193"]
+            "allowedHosts": ["all"]
           }
         },
         "extract-i18n": {
