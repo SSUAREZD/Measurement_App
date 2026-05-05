@@ -48,6 +48,10 @@ export interface ClientDTO {
 
 export interface FeetMeasurement {
   userId?: string;
+  bodyPart?: string;  // FEET
+  side?: string;      // LEFT, RIGHT, BOTH
+  units?: string;     // CM, INCHES
+  sex?: string;       // MALE, FEMALE
   footLength:   number;
   ballWidth:    number;
   heelWidth:    number;
@@ -55,6 +59,14 @@ export interface FeetMeasurement {
   ballGirth:    number;
   /** Calculated server-side — always sent as 0 */
   instepGirth:  number;
+}
+
+export type FeetMeasurementDTO = FeetMeasurement;
+
+export interface MeasurementDTO {
+  id?: number;
+  userId?: string;
+  [key: string]: unknown;
 }
 
 // ─── Product ──────────────────────────────────────────────────────────────────

@@ -5,4 +5,5 @@ export const environment = {
   production: true,
   apiUrl: '/api',
   appUrl: `${protocol}//${host}`,
+  recommendationAppUrl: '/login',
 };
