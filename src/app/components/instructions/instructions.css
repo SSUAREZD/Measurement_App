@@ -1,0 +1,365 @@
+/* ── Overlay ──────────────────────────────────────────────────────────────── */
+.instructions-overlay {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 65%;
+  z-index: 10;
+  border-radius: 24px 24px 0 0;
+  background: rgba(15, 23, 42, 0.97);
+  backdrop-filter: blur(16px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: sheet-rise 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@keyframes sheet-rise {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+/* ── Header / drag handle ─────────────────────────────────────────────────── */
+.inst-header {
+  padding: 12px 0;
+  display: flex;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.drag-handle {
+  width: 40px; height: 4px;
+  background: rgba(255,255,255,0.3);
+  border-radius: 2px;
+}
+
+/* ── Slides viewport ──────────────────────────────────────────────────────── */
+.inst-slides-viewport {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  min-height: 0;
+}
+.inst-slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px 6px;
+}
+
+/* ── Illustration container ───────────────────────────────────────────────── */
+.inst-illustration {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* ── Slides 1 & 2 — images ───────────────────────────────────────────────── */
+.img-slide { padding: 4px; }
+.slide-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 12px;
+}
+
+/* ── Slides 3-5 — foot image + phone scene ───────────────────────────────── */
+
+/*
+  feet-animated.png is 500×500 (square) with transparent background.
+  Scene is square to match. No background — inherits the dark overlay.
+*/
+.scene-wrapper {
+  position: relative;
+  height: 150px;
+  width: 150px;
+  overflow: hidden;
+}
+
+/* Foot image fills the scene */
+.foot-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/*
+  Phone anchor:
+  - left: 58%  → centers phone over the big-toe (RIGHT) side but stays on the sole
+  - bottom: 14% → just above the heel, ankle area (heel bottom is at ~12% from scene bottom)
+*/
+.phone-centering {
+  position: absolute;
+  bottom: 14%;
+  left: 58%;
+  transform: translateX(-50%);
+}
+
+/* Phone body */
+.phone-body {
+  width: 30px;
+  height: 62px;
+  background: #12121e;
+  border-radius: 6px;
+  position: relative;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.85);
+  overflow: hidden;
+  outline: 1.5px solid rgba(255,255,255,0.18);
+}
+
+/* Screen area (leaves room at bottom for camera dot) */
+.phone-screen {
+  position: absolute;
+  inset: 3px 3px 14px 3px;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+/* Slide 3: dark screen — phone is just positioned, not active yet */
+.screen-dark {
+  width: 100%; height: 100%;
+  background: #08080f;
+}
+
+/* Camera dot at the BOTTOM of the phone (points at foot) */
+.camera-btm {
+  position: absolute;
+  bottom: 3px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 6px; height: 6px;
+  background: #0ea5e9;
+  border-radius: 50%;
+  box-shadow: 0 0 4px #0ea5e9;
+}
+
+/* ── Slide 4: phone slides heel → toe (upward) ───────────────────────────── */
+/*
+  Scene: 150×150px. Image: 500×500px.
+  Heel bottom in image: ~88% from top → 88% of 150 = 132px from top → 18px from scene bottom.
+  Phone anchored at bottom: 12% (= 18px from scene bottom) → visual bottom at heel. ✓
+  Big-toe top in image: ~18% from top → 18% of 150 = 27px from top.
+  Phone (62px) at toes: top=27px → bottom=89px from top → 61px from scene bottom.
+  Travel from (bottom:18px) to (bottom:61px) → translateY(-43px).
+*/
+.slide4-anim {
+  animation: slide4-phone 5s ease-in-out infinite;
+}
+@keyframes slide4-phone {
+  0%   { transform: translateY(0); }        /* ankle — phone top near mid-foot */
+  30%  { transform: translateY(0); }        /* hold — Calibrando */
+  48%  { transform: translateY(0); }        /* hold — Quieto (phone still) */
+  78%  { transform: translateY(-40px); }    /* toe — phone top at big toe */
+  86%  { transform: translateY(-40px); }    /* pause at toe */
+  96%  { transform: translateY(0); }        /* snap back */
+  100% { transform: translateY(0); }
+}
+
+/* Three screen states with coordinated opacity keyframes */
+.screen-state {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 4.5px;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  opacity: 0;
+}
+
+/* Calibrando (blue): 0–36% */
+.s4-calib {
+  background: #1d4ed8;
+  animation: s4-calib 5s ease-in-out infinite;
+}
+@keyframes s4-calib {
+  0%,1% { opacity: 1; }
+  30%   { opacity: 1; }
+  38%   { opacity: 0; }
+  100%  { opacity: 0; }
+}
+
+/* Quieto (black): 36–52% — phone still holds position */
+.s4-quieto {
+  background: #0d0d0d;
+  animation: s4-quieto 5s ease-in-out infinite;
+}
+@keyframes s4-quieto {
+  0%    { opacity: 0; }
+  36%   { opacity: 0; }
+  42%   { opacity: 1; }
+  52%   { opacity: 1; }
+  60%   { opacity: 0; }
+  100%  { opacity: 0; }
+}
+
+/* Perfecto (green): 54%+ while phone is moving up */
+.s4-perfecto {
+  background: #15803d;
+  animation: s4-perfecto 5s ease-in-out infinite;
+}
+@keyframes s4-perfecto {
+  0%    { opacity: 0; }
+  54%   { opacity: 0; }
+  60%   { opacity: 1; }
+  86%   { opacity: 1; }
+  94%   { opacity: 0; }
+  100%  { opacity: 0; }
+}
+
+/* ── Slide 5: phone returns toe → heel (downward) ───────────────────────── */
+.slide5-anim {
+  transform: translateY(-40px);             /* start at toe position */
+  animation: slide5-phone 4s ease-in-out infinite;
+}
+@keyframes slide5-phone {
+  0%   { transform: translateY(-40px); }    /* toe — phone top at big toe */
+  18%  { transform: translateY(-40px); }    /* brief pause at toe */
+  75%  { transform: translateY(0); }        /* ankle */
+  100% { transform: translateY(0); }        /* hold */
+}
+
+/* No-touch screen: visible throughout the return */
+.s5-notouch {
+  background: #1a1a2a;
+  animation: s5-notouch 4s ease-in-out infinite;
+}
+@keyframes s5-notouch {
+  0%    { opacity: 1; }
+  75%   { opacity: 1; }
+  87%   { opacity: 0; }
+  100%  { opacity: 0; }
+}
+
+/* ── Slide 6: checkmarks + save button ────────────────────────────────────── */
+.slide-6 {
+  flex-direction: column;
+  gap: 10px;
+}
+.measurements-display {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: center;
+}
+.check-badge {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: rgba(39,174,96,0.9);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+}
+.check-mark { font-size: 22px; }
+.check-label { font-size: 9px; margin-top: 1px; }
+
+.check-1 { animation: check1 3s ease-in-out infinite; }
+.check-2 { animation: check2 3s ease-in-out infinite; }
+.check-3 { animation: check3 3s ease-in-out infinite; }
+
+@keyframes check1 {
+  0%,9%    { opacity:0; transform:scale(0); }
+  15%      { opacity:1; transform:scale(1.2); }
+  20%,100% { opacity:1; transform:scale(1); }
+}
+@keyframes check2 {
+  0%,24%   { opacity:0; transform:scale(0); }
+  30%      { opacity:1; transform:scale(1.2); }
+  35%,100% { opacity:1; transform:scale(1); }
+}
+@keyframes check3 {
+  0%,39%   { opacity:0; transform:scale(0); }
+  45%      { opacity:1; transform:scale(1.2); }
+  50%,100% { opacity:1; transform:scale(1); }
+}
+
+.save-button-demo {
+  display:flex; align-items:center; justify-content:center;
+  position:relative;
+}
+.save-btn-anim {
+  padding: 10px 24px;
+  background: #2980b9;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+  animation: btn-tap 3s ease-in-out infinite;
+}
+@keyframes btn-tap {
+  0%,54%  { transform:scale(1); box-shadow:none; }
+  60%     { transform:scale(0.96); box-shadow:0 0 0 8px rgba(41,128,185,0); }
+  68%,100%{ transform:scale(1); }
+}
+.finger-tap-demo {
+  position:absolute; bottom:-18px;
+  width:28px; height:28px;
+  animation: finger-tap 3s ease-in-out infinite;
+}
+@keyframes finger-tap {
+  0%,54%  { transform:translateY(0); opacity:0; }
+  56%     { opacity:1; }
+  60%     { transform:translateY(8px); opacity:1; }
+  68%     { transform:translateY(0); opacity:0.6; }
+  75%,100%{ opacity:0; }
+}
+.finger-svg { width:100%; height:100%; }
+
+/* ── Slide text ───────────────────────────────────────────────────────────── */
+.inst-text {
+  flex-shrink: 0;
+  color: rgba(255,255,255,0.9);
+  font-size: 13px;
+  text-align: center;
+  line-height: 1.5;
+  padding: 6px 0 2px;
+}
+
+/* ── Footer ───────────────────────────────────────────────────────────────── */
+.inst-footer {
+  flex-shrink: 0;
+  padding: 14px 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-items: center;
+}
+.inst-dots { display:flex; gap:8px; }
+.inst-dot {
+  width:8px; height:8px;
+  border-radius:50%;
+  background: rgba(255,255,255,0.3);
+  transition: background 0.2s, transform 0.2s;
+}
+.inst-dot.active { background:#2980b9; transform:scale(1.3); }
+
+.inst-entendido {
+  padding: 12px 0;
+  background: #2980b9;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  width: 100%;
+  max-width: 220px;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+.inst-entendido:hover { background:#1f6fa0; box-shadow:0 4px 12px rgba(41,128,185,0.4); }
+.inst-entendido:active { transform:scale(0.98); }

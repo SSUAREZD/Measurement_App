@@ -1,0 +1,109 @@
+<div class="instructions-overlay" *ngIf="visible">
+  <div class="inst-header">
+    <div class="drag-handle"></div>
+  </div>
+
+  <div class="inst-slides-viewport" (click)="onTap($event)">
+    <ng-container *ngFor="let slide of slides; let i = index">
+      <div
+        class="inst-slide"
+        *ngIf="currentSlide === i"
+        [class.animate__animated]="true"
+        [class.animate__slideInRight]="slideDirection === 'next'"
+        [class.animate__slideInLeft]="slideDirection === 'prev'"
+      >
+
+      <!-- Slide 1: Remove shoes — static image -->
+      <div class="inst-illustration img-slide" *ngIf="i === 0">
+        <img src="/1st_slide.png" class="slide-image" alt="Quítate los zapatos" />
+      </div>
+
+      <!-- Slide 2: Cross foot — static image -->
+      <div class="inst-illustration img-slide" *ngIf="i === 1">
+        <img src="/2nd_slide.png" class="slide-image" alt="Cruza el pie" />
+      </div>
+
+      <!-- Slides 3-5: foot image + phone overlay -->
+      <div class="inst-illustration" *ngIf="i === 2 || i === 3 || i === 4">
+        <div class="scene-wrapper">
+
+          <!-- Foot sole image: big toe on RIGHT, heel at BOTTOM -->
+          <img src="/feet-animated.png" class="foot-img" alt="Foot sole" />
+
+          <!--
+            Phone anchor:
+            - left: 62%  → centers phone over the big-toe (RIGHT) side
+            - bottom: 12% → aligns phone bottom with the heel
+                            (image has ~12% whitespace below the heel)
+          -->
+          <div class="phone-centering">
+
+            <!-- SLIDE 3: static phone at heel, dark screen -->
+            <div class="phone-body" *ngIf="i === 2">
+              <div class="phone-screen screen-dark"></div>
+              <div class="camera-btm"></div>
+            </div>
+
+            <!-- SLIDE 4: heel → toe, animated screen phases -->
+            <div class="phone-body slide4-anim" *ngIf="i === 3">
+              <div class="phone-screen">
+                <div class="screen-state s4-calib">Calibrando</div>
+                <div class="screen-state s4-quieto">Quieto</div>
+                <div class="screen-state s4-perfecto">Perfecto</div>
+              </div>
+              <div class="camera-btm"></div>
+            </div>
+
+            <!-- SLIDE 5: toe → heel return, no-touch icon -->
+            <div class="phone-body slide5-anim" *ngIf="i === 4">
+              <div class="phone-screen">
+                <div class="screen-state s5-notouch">
+                  <svg viewBox="0 0 40 40" style="width:62%;height:62%">
+                    <circle cx="20" cy="20" r="13" fill="none" stroke="rgba(255,80,80,0.95)" stroke-width="2.5"/>
+                    <line x1="9" y1="31" x2="31" y2="9" stroke="rgba(255,80,80,0.95)" stroke-width="2.5"/>
+                  </svg>
+                </div>
+              </div>
+              <div class="camera-btm"></div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 6: Save measurements (unchanged) -->
+      <div class="inst-illustration slide-6" *ngIf="i === 5">
+        <div class="measurements-display">
+          <div class="check-badge check-1"><span class="check-mark">✓</span><span class="check-label">M1</span></div>
+          <div class="check-badge check-2"><span class="check-mark">✓</span><span class="check-label">M2</span></div>
+          <div class="check-badge check-3"><span class="check-mark">✓</span><span class="check-label">M3</span></div>
+        </div>
+        <div class="save-button-demo">
+          <button class="save-btn-anim">Guardar medidas</button>
+          <div class="finger-tap-demo">
+            <svg viewBox="0 0 40 40" class="finger-svg">
+              <circle cx="20" cy="15" r="8" fill="rgba(41,128,185,0.7)" />
+              <path d="M 20 23 L 20 35" stroke="rgba(41,128,185,0.7)" stroke-width="2" fill="none" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="inst-text">{{ slide.text }}</div>
+      </div>
+    </ng-container>
+  </div>
+
+  <div class="inst-footer">
+    <div class="inst-dots">
+      <div
+        class="inst-dot"
+        *ngFor="let dot of [0, 1, 2, 3, 4, 5]"
+        [class.active]="dot === currentSlide"
+      ></div>
+    </div>
+    <button class="inst-entendido" *ngIf="isLastSlide" (click)="onEntendido()">
+      Entendido
+    </button>
+  </div>
+</div>

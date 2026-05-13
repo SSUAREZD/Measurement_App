@@ -27,7 +27,9 @@
                 "input": "public"
               }
             ],
-            "styles": [],
+            "styles": [
+              "node_modules/animate.css/animate.min.css"
+            ],
             "scripts": [],
             "server": "src/main.server.ts",
             "ssr": {
@@ -48,7 +50,7 @@
                   "maximumError": "16kB"
                 }
               ],
-              "outputHashing": true,
+              "outputHashing": "all",
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
@@ -100,7 +102,9 @@
                 "input": "public"
               }
             ],
-            "styles": [],
+            "styles": [
+              "node_modules/animate.css/animate.min.css"
+            ],
             "scripts": []
           }
         }

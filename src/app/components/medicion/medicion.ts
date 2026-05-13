@@ -2,6 +2,7 @@ import { Component, AfterViewInit, OnInit, OnDestroy, ViewChild, ElementRef } fr
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { Navbar } from '../navbar/navbar';
+import { InstructionsComponent } from '../instructions/instructions';
 import { FeetMeasurement } from '../../models/models';
 import { MeasurementService } from '../../services/measurement.service';
 import { environment } from '../../../environments/environment';
@@ -11,7 +12,7 @@ type SpeedStatus   = 'idle' | 'slow' | 'ok' | 'fast';
 
 @Component({
   selector: 'app-medicion',
-  imports: [CommonModule, Navbar],
+  imports: [CommonModule, Navbar, InstructionsComponent],
   templateUrl: './medicion.html',
   styleUrl: './medicion.css',
 })
@@ -29,6 +30,7 @@ export class MedicionComponent implements OnInit, AfterViewInit, OnDestroy {
 
   userId: string | null = null;
   submitStatus: 'idle' | 'submitting' | 'done' | 'error' = 'idle';
+  showInstructions = true;
 
   constructor(
     private route: ActivatedRoute,
@@ -113,6 +115,10 @@ export class MedicionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.totalDistanceCm       = 0;
     this.lastDistanceChangedAt = 0;
     this.submitStatus          = 'idle';
+  }
+
+  onInstructionsDismissed(): void {
+    this.showInstructions = false;
   }
 
   get isIdle()        { return this.state === 'idle'; }
