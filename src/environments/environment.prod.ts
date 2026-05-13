@@ -3,7 +3,7 @@ const protocol = typeof window !== 'undefined' ? window.location.protocol : 'htt
 
 export const environment = {
   production: true,
-  apiUrl: '/api',
+  apiUrl: 'http://3.134.98.147:4202/',
   appUrl: `${protocol}//${host}`,
   recommendationAppUrl: 'http://3.134.98.147:4201/login',
 };
