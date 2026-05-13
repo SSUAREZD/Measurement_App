@@ -348,9 +348,8 @@
 }
 .inst-dot.active { background:#2980b9; transform:scale(1.3); }
 
-.inst-entendido {
+.inst-entendido, .inst-skip {
   padding: 12px 0;
-  background: #2980b9;
   color: white;
   border: none;
   border-radius: 8px;
@@ -361,5 +360,15 @@
   max-width: 220px;
   transition: background 0.2s, box-shadow 0.2s;
 }
+
+.inst-entendido {
+  background: #2980b9;
+}
 .inst-entendido:hover { background:#1f6fa0; box-shadow:0 4px 12px rgba(41,128,185,0.4); }
 .inst-entendido:active { transform:scale(0.98); }
+
+.inst-skip {
+  background: rgba(255,255,255,0.2);
+}
+.inst-skip:hover { background:rgba(255,255,255,0.3); }
+.inst-skip:active { transform:scale(0.98); }

@@ -315,27 +315,10 @@ export class MedicionComponent implements OnInit, AfterViewInit, OnDestroy {
     osc.stop(ctx.currentTime + 0.08);
   }
 
-  // ── Toggle ────────────────────────────────────────────────────────────────
+  // ── Press-and-hold controls ───────────────────────────────────────────────
 
-  async toggleTracking(): Promise<void> {
-    if (this.state !== 'idle') {
-      this.invalidated     = false; // reset before save so saveMeasurement can flag it
-      this.saveMeasurement();
-      this.state           = 'idle';
-      this.stopMotionListener();
-      this.stopMetronome();
-      this.stopBrightnessMonitor();
-      this.totalDistanceCm = 0;
-      this.velocity        = { x: 0, y: 0, z: 0 };
-      this.lastTimestamp   = null;
-      this.calibSamples    = [];
-      this.calibSamplesG   = [];
-      this.calibProgress   = 0;
-      this.speedStatus     = 'idle';
-      return;
-    }
-
-    // All 3 phases done — wait for explicit confirm/reset, ignore overlay taps
+  async startTracking(): Promise<void> {
+    if (this.state !== 'idle') return;
     if (this.finalResult !== null) return;
 
     this.invalidated = false;
@@ -344,6 +327,9 @@ export class MedicionComponent implements OnInit, AfterViewInit, OnDestroy {
     if (typeof dme.requestPermission === 'function') {
       const result = await dme.requestPermission();
       if (result !== 'granted') return;
+      // After the async iOS permission dialog the state may have been reset by
+      // a pointercancel — guard here so we don't restart inadvertently.
+      if (this.state !== 'idle') return;
     }
 
     this.calibSamples  = [];
@@ -354,6 +340,43 @@ export class MedicionComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.motionHandler = (e: DeviceMotionEvent) => this.onDeviceMotion(e);
     window.addEventListener('devicemotion', this.motionHandler);
+  }
+
+  stopTracking(): void {
+    if (this.state === 'idle') return;
+
+    // Released during calibration — invalid (must hold through entire scan)
+    if (this.state === 'calibrating') {
+      this.invalidated = true;
+      this.state = 'idle';
+      this.stopMotionListener();
+      this.stopBrightnessMonitor();
+      this.totalDistanceCm = 0;
+      this.velocity = { x: 0, y: 0, z: 0 };
+      this.lastTimestamp = null;
+      this.calibSamples = [];
+      this.calibSamplesG = [];
+      this.calibProgress = 0;
+      this.speedStatus = 'idle';
+      return;
+    }
+
+    // Normal stop during tracking — save measurement
+    if (this.state === 'tracking') {
+      this.invalidated = false;
+      this.saveMeasurement();
+      this.state = 'idle';
+      this.stopMotionListener();
+      this.stopMetronome();
+      this.stopBrightnessMonitor();
+      this.totalDistanceCm = 0;
+      this.velocity = { x: 0, y: 0, z: 0 };
+      this.lastTimestamp = null;
+      this.calibSamples = [];
+      this.calibSamplesG = [];
+      this.calibProgress = 0;
+      this.speedStatus = 'idle';
+    }
   }
 
   // ── Motion handler ────────────────────────────────────────────────────────

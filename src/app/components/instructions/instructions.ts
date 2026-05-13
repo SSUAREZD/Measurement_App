@@ -35,7 +35,7 @@ export class InstructionsComponent {
       animClass: 'slide-3',
     },
     {
-      text: 'Sostén el celular quieto. Cuando la pantalla diga "Quieto", deslízalo suavemente hasta la punta del dedo gordo y tocalo cuando hayas llegado a la punta del dedo gordo.',
+      text: 'Mantén presionado la pantalla. Cuando la pantalla diga "Quieto", desliza el celular suavemente hasta la punta del dedo gordo. Suelta cuando llegues a la punta.',
       animClass: 'slide-4',
     },
     {

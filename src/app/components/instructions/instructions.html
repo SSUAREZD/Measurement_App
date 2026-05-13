@@ -102,8 +102,11 @@
         [class.active]="dot === currentSlide"
       ></div>
     </div>
-    <button class="inst-entendido" *ngIf="isLastSlide" (click)="onEntendido()">
+    <button class="inst-entendido" *ngIf="isLastSlide" (click)="onEntendido()" (pointerup)="onEntendido()">
       Entendido
+    </button>
+    <button class="inst-skip" *ngIf="!isLastSlide" (click)="onEntendido()" (pointerup)="onEntendido()">
+      Saltar
     </button>
   </div>
 </div>
