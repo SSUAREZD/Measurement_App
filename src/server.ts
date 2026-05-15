@@ -33,7 +33,7 @@ app.get(
  */
 app.use('**', createNodeRequestHandler(async (req, res, next) => {
   try {
-    req.headers.host = `localhost:${process.env['PORT'] || 4202}`;
+    req.headers.host = `3.134.98.147:${process.env['PORT'] || 4202}`;
     const response = await angularApp.handle(req);
     if (response) {
       await writeResponseToNodeResponse(response, res);
