@@ -19,5 +19,7 @@ RUN npm ci --omit=dev && npm cache clean --force
 
 COPY --from=build /app/dist ./dist
 
+COPY certs ./certs
+
 EXPOSE 4202
 CMD ["node", "dist/measurement-app/server/server.mjs"]
