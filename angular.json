@@ -13,6 +13,13 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
+            "security": {
+              "allowedHosts": [
+                "localhost",
+                "3.134.98.147",
+                "http://web.thoth-colombia.site"
+               ]
+            },
             "outputPath": "dist/measurement-app",
             "outputMode": "server",
             "index": "src/index.html",
@@ -38,6 +45,13 @@
           },
           "configurations": {
             "production": {
+              "security": {
+                "allowedHosts": [
+                  "localhost",
+                  "3.134.98.147",
+                  "http://web.thoth-colombia.site"
+               ]
+            },
               "budgets": [
                 {
                   "type": "initial",
@@ -59,6 +73,13 @@
               ]
             },
             "development": {
+              "security": {
+                  "allowedHosts": [
+                    "localhost",
+                    "3.134.98.147",
+                    "http://web.thoth-colombia.site"
+                ]
+            },
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
