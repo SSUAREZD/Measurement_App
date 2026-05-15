@@ -33,6 +33,7 @@ app.get(
  */
 app.use('**', createNodeRequestHandler(async (req, res, next) => {
   try {
+    req.headers.host = `localhost:${process.env['PORT'] || 4202}`;
     const response = await angularApp.handle(req);
     if (response) {
       await writeResponseToNodeResponse(response, res);
@@ -45,7 +46,7 @@ app.use('**', createNodeRequestHandler(async (req, res, next) => {
 }));
 
 if (isMainModule(import.meta.url)) {
-  const port = process.env['PORT'] || 4000;
+  const port = process.env['PORT'] || 4202;
   app.listen(port, () => {
     console.log(`Node Express server listening on http://0.0.0.0:${port}`);
   });
